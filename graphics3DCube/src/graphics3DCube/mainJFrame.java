@@ -5,6 +5,8 @@ package graphics3DCube;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Point;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,6 +16,7 @@ import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
 import java.awt.event.MouseEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -29,7 +32,10 @@ import javax.swing.event.ChangeEvent;
  */
 public class mainJFrame extends JFrame {
 
-	private JPanel contentPane;
+	private myJPanel contentPane;
+	cube3D myCube = new cube3D();
+	
+	
 
 	/**
 	 * Launch the application.
@@ -51,9 +57,10 @@ public class mainJFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public mainJFrame() {
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 520);
-		contentPane = new JPanel();
+		contentPane = new myJPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		SpringLayout sl_contentPane = new SpringLayout();
@@ -69,12 +76,15 @@ public class mainJFrame extends JFrame {
 			public void stateChanged(ChangeEvent e) {
 				JSlider me = (JSlider)e.getSource();
 				btnMoveMe.setLocation( me.getValue(),(int)btnMoveMe.getLocation().getY());
-			}
+
+				myCube.yTheta = me.getValue()*Math.PI/180;
+				
+				contentPane.repaint();
+				}
 		});
 		slider.setPaintLabels(true);
-		slider.setMajorTickSpacing(50);
-		slider.setMinimum(50);
-		slider.setMaximum(400);
+		slider.setMajorTickSpacing(60);
+		slider.setMaximum(360);
 		slider.setMinorTickSpacing(1);
 		slider.setSnapToTicks(true);
 		slider.setValueIsAdjusting(true);
@@ -92,6 +102,11 @@ public class mainJFrame extends JFrame {
 			public void stateChanged(ChangeEvent e) {
 				JSlider me = (JSlider)e.getSource();
 				btnMoveMe.setLocation( (int)btnMoveMe.getLocation().getX(),me.getValue());
+	
+				myCube.xTheta = me.getValue()*Math.PI/180;
+				
+				contentPane.invalidate();
+				contentPane.repaint();
 			}
 		});
 		slider_1.setInverted(true);
@@ -99,13 +114,39 @@ public class mainJFrame extends JFrame {
 		sl_contentPane.putConstraint(SpringLayout.EAST, slider_1, 68, SpringLayout.WEST, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.NORTH, slider_1, 90, SpringLayout.NORTH, contentPane);
 		sl_contentPane.putConstraint(SpringLayout.WEST, slider_1, 10, SpringLayout.WEST, contentPane);
-		slider_1.setMinimum(50);
-		slider_1.setMaximum(500);
-		slider_1.setMajorTickSpacing(100);
+		slider_1.setMaximum(360);
+		slider_1.setMajorTickSpacing(60);
 		slider_1.setPaintTicks(true);
 		slider_1.setPaintLabels(true);
 		slider_1.setOrientation(SwingConstants.VERTICAL);
 		contentPane.add(slider_1);
 		contentPane.add(slider);
+		
+		JSlider slider_2 = new JSlider();
+		slider_2.setValue(10);
+		slider_2.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				// adjust scaling of my cube
+				JSlider me = (JSlider)e.getSource();
+				myCube.dScaleFactor = me.getValue();
+				contentPane.repaint();
+			}
+		});
+		sl_contentPane.putConstraint(SpringLayout.NORTH, slider_2, -42, SpringLayout.SOUTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, slider_2, 0, SpringLayout.SOUTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, slider_2, -89, SpringLayout.EAST, contentPane);
+		slider_2.setPaintTicks(true);
+		slider_2.setPaintLabels(true);
+		slider_2.setMaximum(50);
+		slider_2.setMajorTickSpacing(10);
+		slider_2.setMinimum(1);
+		contentPane.add(slider_2);
+		
+		myCube.scaleXYZ(10);
+		contentPane.cubeAdd(myCube);
+		
 	}
+	
+	
+	
 }
